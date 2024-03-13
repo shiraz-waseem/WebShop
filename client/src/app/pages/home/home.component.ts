@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
   category: string | undefined;
 
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    // throw new Error('Method not implemented.');
   }
 
   onColumnsCountChange(colsNum: number): void {
