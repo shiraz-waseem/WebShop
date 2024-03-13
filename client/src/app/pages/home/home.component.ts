@@ -15,6 +15,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductsHeaderComponent } from '../components/products-header/products-header.component';
 import { FiltersComponent } from '../components/filters/filters.component';
 import { ProductBoxComponent } from '../components/product-box/product-box.component';
+import { Product } from '../../models/product.model';
+import { CartService } from '../../services/cart.service';
 
 // itni items per row and : utni height
 const ROWS_HEIGHT: { [id: number]: number } = { 1: 400, 3: 335, 4: 350 };
@@ -52,6 +54,8 @@ export class HomeComponent implements OnInit {
   // value is string
   category: string | undefined;
 
+  constructor(private cartService: CartService) {}
+
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
   }
@@ -72,5 +76,15 @@ export class HomeComponent implements OnInit {
   onShowCategory(newCategory: string): void {
     this.category = newCategory;
     // this.getProducts();
+  }
+
+  onAddToCart(product: Product): void {
+    this.cartService.addToCart({
+      product: product.image,
+      name: product.title,
+      price: product.price,
+      quantity: 1,
+      id: product.id,
+    });
   }
 }

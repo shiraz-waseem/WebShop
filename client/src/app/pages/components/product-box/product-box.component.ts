@@ -13,6 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { Product } from '../../../models/product.model';
 @Component({
   selector: 'app-product-box',
   standalone: true,
@@ -38,4 +39,19 @@ import { CommonModule } from '@angular/common';
 export class ProductBoxComponent {
   // Jab open kre gy tw 3 but if clicked on icon agar 1 then yes on
   @Input() fullWidthMode = false;
+  // @Input() product: Product | undefined;
+  @Input() product: Product | undefined = {
+    id: 1,
+    title: 'Snickers',
+    price: 150,
+    category: 'shoes',
+    description: 'Best snicker is here',
+    image: 'https://via.placeholder.com/150',
+  };
+
+  @Output() addToCart = new EventEmitter();
+
+  onAddToCart(): void {
+    this.addToCart.emit(this.product);
+  }
 }

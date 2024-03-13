@@ -15,6 +15,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Cart, CartItem } from '../../models/cart.model';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-cart',
@@ -34,37 +35,18 @@ import { RouterLink } from '@angular/router';
     MatTableModule,
     // MatBadgeModule,
     // MatSnackBarModule,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './cart.component.html',
-  styleUrl: './cart.component.css'
+  styleUrl: './cart.component.css',
 })
-export class CartComponent implements OnInit{
+export class CartComponent implements OnInit {
   // cart: Cart = { items: [] };
 
   // for now lets create a default cart
-  cart: Cart = { items: [{
-    product:"https://via.placeholder.com/150",
-    name:'snickers',
-    price:150,
-    quantity:1,
-    id:1
-  },
-  {
-    product:"https://via.placeholder.com/150",
-    name:'snickers',
-    price:150,
-    quantity:1,
-    id:2
-  },
-  {
-    product:"https://via.placeholder.com/150",
-    name:'snickers',
-    price:1300,
-    quantity:2,
-    id:3
-  }
-]};
+  cart: Cart = {
+    items: [],
+  };
 
   // displaying columns      string[] ki jagah we can write Array<string>
   displayedColumns: string[] = [
@@ -79,14 +61,39 @@ export class CartComponent implements OnInit{
   // This property will recieve cart array
   dataSource: Array<CartItem> = [];
 
-  ngOnInit(): void { 
-    this.dataSource = this.cart.items
+  constructor(private cartService: CartService) {}
+
+  ngOnInit(): void {
+    this.dataSource = this.cart.items;
+    this.cartService.cart.subscribe((_cart: Cart) => {
+      this.cart = _cart;
+      this.dataSource = _cart.items;
+    });
   }
+
+  // getTotal(items: CartItem[]): number {
+  //   return items.map((item)=>item.price*item.quantity)
+  //   // and add all of them
+  //   .reduce((prev,current)=>prev+current, 0)
+  // }
 
   getTotal(items: CartItem[]): number {
-    return items.map((item)=>item.price*item.quantity)
-    // and add all of them
-    .reduce((prev,current)=>prev+current, 0)
+    return this.cartService.getTotal(items);
   }
 
+  onClearCart(): void {
+    this.cartService.clearCart();
+  }
+
+  onRemoveFromCart(item: CartItem): void {
+    this.cartService.removeFromCart(item);
+  }
+
+  onAddQuantity(item: CartItem): void {
+    this.cartService.addToCart(item);
+  }
+
+  onRemoveQuantity(item: CartItem): void {
+    this.cartService.removeQuantity(item);
+  }
 }
