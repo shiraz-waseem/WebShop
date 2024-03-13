@@ -14,7 +14,9 @@
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Name</th>
       <td mat-cell *matCellDef="let element">
-        <span class="truncate max-w-xs">{{ element.name }}</span>
+        <p class="truncate max-w-xs" style="position: relative; top: 6px">
+          {{ element.name }}
+        </p>
       </td>
       <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>

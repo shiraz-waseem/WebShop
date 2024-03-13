@@ -39,7 +39,7 @@ export class ProductsHeaderComponent {
   @Output() sortChange = new EventEmitter<string>();
 
   sort = 'desc';
-  itemsShowCount = 5;
+  itemsShowCount = 12;
 
   // return void means not going to return anything
   onSortUpdated(newSort: string): void {

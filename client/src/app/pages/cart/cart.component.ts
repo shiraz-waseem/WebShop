@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,6 +16,7 @@ import { Cart, CartItem } from '../../models/cart.model';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -40,7 +41,7 @@ import { CartService } from '../../services/cart.service';
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css',
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
   // cart: Cart = { items: [] };
 
   // for now lets create a default cart
@@ -60,6 +61,7 @@ export class CartComponent implements OnInit {
 
   // This property will recieve cart array
   dataSource: Array<CartItem> = [];
+  cartSubscription: Subscription | undefined;
 
   constructor(private cartService: CartService) {}
 
@@ -95,5 +97,11 @@ export class CartComponent implements OnInit {
 
   onRemoveQuantity(item: CartItem): void {
     this.cartService.removeQuantity(item);
+  }
+
+  ngOnDestroy() {
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
+    }
   }
 }

@@ -39,15 +39,15 @@ import { Product } from '../../../models/product.model';
 export class ProductBoxComponent {
   // Jab open kre gy tw 3 but if clicked on icon agar 1 then yes on
   @Input() fullWidthMode = false;
-  // @Input() product: Product | undefined;
-  @Input() product: Product | undefined = {
-    id: 1,
-    title: 'Snickers',
-    price: 150,
-    category: 'shoes',
-    description: 'Best snicker is here',
-    image: 'https://via.placeholder.com/150',
-  };
+  @Input() product: Product | undefined;
+  // @Input() product: Product | undefined = {
+  //   id: 1,
+  //   title: 'Snickers',
+  //   price: 150,
+  //   category: 'shoes',
+  //   description: 'Best snicker is here',
+  //   image: 'https://via.placeholder.com/150',
+  // };
 
   @Output() addToCart = new EventEmitter();
 

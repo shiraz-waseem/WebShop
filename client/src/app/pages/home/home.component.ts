@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,6 +17,9 @@ import { FiltersComponent } from '../components/filters/filters.component';
 import { ProductBoxComponent } from '../components/product-box/product-box.component';
 import { Product } from '../../models/product.model';
 import { CartService } from '../../services/cart.service';
+import { StoreService } from '../../services/store.service';
+import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 // itni items per row and : utni height
 const ROWS_HEIGHT: { [id: number]: number } = { 1: 400, 3: 335, 4: 350 };
@@ -26,6 +29,7 @@ const ROWS_HEIGHT: { [id: number]: number } = { 1: 400, 3: 335, 4: 350 };
   selector: 'app-home',
   standalone: true,
   imports: [
+    CommonModule,
     MatSidenavModule,
     MatGridListModule,
     // MatMenuModule,
@@ -46,7 +50,7 @@ const ROWS_HEIGHT: { [id: number]: number } = { 1: 400, 3: 335, 4: 350 };
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   cols = 3;
   rowHeight: number = ROWS_HEIGHT[this.cols]; // now height is 335 as cols is 3 but neeche once you update yahan sy bhi update
   count = '12';
@@ -54,10 +58,18 @@ export class HomeComponent implements OnInit {
   // value is string
   category: string | undefined;
 
-  constructor(private cartService: CartService) {}
+  // Once we destroy it finishs we dont want any memory leaks
+  productsSubscription: Subscription | undefined;
+
+  products: Product[] | undefined;
+
+  constructor(
+    private cartService: CartService,
+    private storeService: StoreService
+  ) {}
 
   ngOnInit(): void {
-    // throw new Error('Method not implemented.');
+    this.getProducts();
   }
 
   onColumnsCountChange(colsNum: number): void {
@@ -67,15 +79,17 @@ export class HomeComponent implements OnInit {
 
   onItemsCountChange(count: number): void {
     this.count = count.toString();
+    this.getProducts();
   }
 
   onSortChange(newSort: string): void {
     this.sort = newSort;
+    this.getProducts();
   }
 
   onShowCategory(newCategory: string): void {
     this.category = newCategory;
-    // this.getProducts();
+    this.getProducts();
   }
 
   onAddToCart(product: Product): void {
@@ -86,5 +100,20 @@ export class HomeComponent implements OnInit {
       quantity: 1,
       id: product.id,
     });
+  }
+
+  // get products
+  getProducts(): void {
+    this.productsSubscription = this.storeService
+      .getAllProducts(this.count, this.sort, this.category)
+      .subscribe((_products) => {
+        this.products = _products;
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.productsSubscription) {
+      this.productsSubscription.unsubscribe();
+    }
   }
 }
