@@ -17,6 +17,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { loadStripe } from '@stripe/stripe-js';
 
 @Component({
   selector: 'app-cart',
@@ -63,7 +65,7 @@ export class CartComponent implements OnInit, OnDestroy {
   dataSource: Array<CartItem> = [];
   cartSubscription: Subscription | undefined;
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.dataSource = this.cart.items;
@@ -103,5 +105,21 @@ export class CartComponent implements OnInit, OnDestroy {
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
+  }
+
+  onCheckout(): void {
+    this.http
+      .post('http://localhost:4242/checkout', {
+        items: this.cart.items,
+      })
+      .subscribe(async (res: any) => {
+        // loading the stripe in subscribe. Put publishate key
+        let stripe = await loadStripe(
+          'pk_test_51Oh4ioI1qHoGzQiCivu2VtDOkS3mrrEupBtY2Cs9tTmcwKffJUlLQF4D1h9r6Z7kcQCE8hxIoR50YCaXa0KOnpuH00du1bk86V'
+        );
+        stripe?.redirectToCheckout({
+          sessionId: res.id,
+        });
+      });
   }
 }
